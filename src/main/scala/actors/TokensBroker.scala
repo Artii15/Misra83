@@ -13,6 +13,7 @@ class TokensBroker(tokensConsumer: Actor, numberOfProcesses: Int) extends Actor 
   override def receive: Receive = {
     case token: PingPongAlgToken => receiveToken(token)
     case TokenReturn(token: PingPongAlgToken) => sendToNext(token)
+    case NeighbourAnnouncement(neighbourRef) => neighbour = Some(neighbourRef)
     case _ => println("Unknown message received")
   }
 
