@@ -1,7 +1,8 @@
 package actors
 
 import akka.actor.{Actor, ActorRef}
-import tokens.{PingPongAlgToken, TokenReturn}
+import tokens.TokenReturn
+import tokens.misra.PingPongAlgToken
 
 class TokensBroker(monitoredProcess: ActorRef, numberOfProcesses: Int) extends Actor {
   var numberOfPossessedTokens = 0
