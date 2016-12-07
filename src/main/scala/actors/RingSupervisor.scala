@@ -2,6 +2,7 @@ package actors
 
 import akka.actor.Actor
 import com.sun.javaws.exceptions.InvalidArgumentException
+import messages.tokens.misra.{Ping, PingPongPair, Pong}
 import messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
 
 class RingSupervisor(supervisedPairs: Traversable[SupervisedPair]) extends Actor {
@@ -17,10 +18,21 @@ class RingSupervisor(supervisedPairs: Traversable[SupervisedPair]) extends Actor
         pair
     }
     supervisedPairs.head.supervisor ! NeighbourAnnouncement(lastPair.supervisor)
-    lastPair.supervisor ! new
   }
 
   override def receive: Receive = {
-    case NeighbourRegistrationAck => uninitializedPairs -= 1
+    case NeighbourRegistrationAck() => receiveNeighbourRegistrationAck()
+  }
+
+  private def receiveNeighbourRegistrationAck(): Unit = {
+    uninitializedPairs -= 1
+    if(uninitializedPairs == 0) sendInitialTokens()
+  }
+
+  private def sendInitialTokens(): Unit = {
+    val tokensVersion = 0
+    val ping = Ping(tokensVersion)
+    val pong = Pong(tokensVersion)
+    supervisedPairs.head.supervisor ! PingPongPair(ping, pong)
   }
 }
