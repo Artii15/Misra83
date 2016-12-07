@@ -17,6 +17,7 @@ class RingSupervisor(supervisedPairs: Traversable[SupervisedPair]) extends Actor
         pair
     }
     supervisedPairs.head.supervisor ! NeighbourAnnouncement(lastPair.supervisor)
+    lastPair.supervisor ! new
   }
 
   override def receive: Receive = {
