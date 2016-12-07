@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef}
 import tokens.TokenReturn
 import tokens.misra.PingPongAlgToken
 
-class TokensBroker(monitoredProcess: ActorRef, numberOfProcesses: Int) extends Actor {
+class TokensBroker(tokensConsumer: Actor, numberOfProcesses: Int) extends Actor {
   var numberOfPossessedTokens = 0
   var lastProcessedToken: Option[PingPongAlgToken] = None
   var tokensVersion = 0
@@ -18,7 +18,7 @@ class TokensBroker(monitoredProcess: ActorRef, numberOfProcesses: Int) extends A
 
   private def receiveToken(token: PingPongAlgToken): Unit = {
     val processedToken = unpack(token)
-    monitoredProcess ! processedToken
+    tokensConsumer.receive(processedToken)
     lastProcessedToken = Some(processedToken)
   }
 
