@@ -1,3 +1,4 @@
+import actors.{DummyConsumer, TokensBroker}
 import akka.actor.{ActorSystem, Props}
 
 object Main {
@@ -9,7 +10,9 @@ object Main {
   }
 
   private def start(numberOfActors: Int): Unit = {
-    val actorSystem = ActorSystem("Local")
+    val actorSystem = ActorSystem()
+    val consumer = actorSystem.actorOf(Props[DummyConsumer])
+    val broker = actorSystem.actorOf(Props(new TokensBroker(consumer, 1)))
     actorSystem.terminate()
   }
 }
