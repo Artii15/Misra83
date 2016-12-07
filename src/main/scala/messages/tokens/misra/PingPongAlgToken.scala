@@ -1,6 +1,6 @@
-package tokens.misra
+package messages.tokens.misra
 
-import tokens.Token
+import messages.tokens.Token
 
 trait PingPongAlgToken extends Token {
   def makeComplementaryToken(): PingPongAlgToken

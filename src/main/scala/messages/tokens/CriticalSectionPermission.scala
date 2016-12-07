@@ -1,3 +1,3 @@
-package tokens
+package messages.tokens
 
 trait CriticalSectionPermission

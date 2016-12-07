@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.Actor
-import tokens.CriticalSectionPermission
+import messages.tokens.CriticalSectionPermission
 
 class DummyConsumer extends Actor {
   override def receive: Receive = {

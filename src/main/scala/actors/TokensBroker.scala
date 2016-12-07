@@ -1,8 +1,10 @@
 package actors
 
 import akka.actor.{Actor, ActorRef}
-import tokens.TokenReturn
-import tokens.misra.PingPongAlgToken
+import akka.remote.Ack
+import messages.NeighbourAnnouncement
+import messages.tokens.TokenReturn
+import messages.tokens.misra.PingPongAlgToken
 
 class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Actor {
   var numberOfPossessedTokens = 0
@@ -13,7 +15,7 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
   override def receive: Receive = {
     case token: PingPongAlgToken => receiveToken(token)
     case TokenReturn(token: PingPongAlgToken) => sendToNext(token)
-    case NeighbourAnnouncement(neighbourRef) => neighbour = Some(neighbourRef)
+    case NeighbourAnnouncement(neighbourRef) => receiveNeighbour(neighbourRef)
     case _ => println("Unknown message received")
   }
 
@@ -63,5 +65,10 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
   private def send(token: PingPongAlgToken, receiver: Option[ActorRef]): Unit = {
     numberOfPossessedTokens -= 1
     receiver.foreach(_ ! token.withVersion(tokensVersion))
+  }
+
+  private def receiveNeighbour(neighbourRef: ActorRef): Unit = {
+    neighbour = Some(neighbourRef)
+    sender() ! Ack
   }
 }

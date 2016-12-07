@@ -11,8 +11,17 @@ object Main {
 
   private def start(numberOfActors: Int): Unit = {
     val actorSystem = ActorSystem()
-    val consumer = actorSystem.actorOf(Props[DummyConsumer])
-    val broker = actorSystem.actorOf(Props(new TokensBroker(consumer, 1)))
+
+    val systemSize = 2
+
+    val consumer1 = actorSystem.actorOf(Props[DummyConsumer])
+    val broker1 = actorSystem.actorOf(Props(new TokensBroker(consumer1, systemSize)))
+
+    val consumer2 = actorSystem.actorOf(Props[DummyConsumer])
+    val broker2 = actorSystem.actorOf(Props(new TokensBroker(consumer2, systemSize)))
+
+
+
     actorSystem.terminate()
   }
 }

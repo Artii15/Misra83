@@ -1,6 +1,6 @@
-package tokens.misra
+package messages.tokens.misra
 
-import tokens.Token
+import messages.tokens.Token
 
 case class Pong(version: Int) extends PingPongAlgToken {
   override def makeComplementaryToken(): PingPongAlgToken = Ping(version)
