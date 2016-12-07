@@ -1,4 +1,7 @@
+package actors
+
 import akka.actor.Actor
+import tokens.{CriticalSectionPermission, Token, TokenReturn}
 
 class TokensConsumer extends Actor {
   override def receive: Receive = {

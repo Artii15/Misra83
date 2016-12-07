@@ -1,3 +1,5 @@
+package tokens
+
 case class Ping(version: Int) extends PingPongAlgToken with CriticalSectionPermission {
   override def makeComplementaryToken(): PingPongAlgToken = Pong(version)
 

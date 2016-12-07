@@ -1,3 +1,5 @@
+package tokens
+
 case class Pong(version: Int) extends PingPongAlgToken {
   override def makeComplementaryToken(): PingPongAlgToken = Ping(version)
 
