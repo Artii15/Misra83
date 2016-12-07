@@ -1,5 +1,6 @@
 import actors.{DummyConsumer, TokensBroker}
 import akka.actor.{ActorSystem, Props}
+import messages.NeighbourAnnouncement
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -20,7 +21,7 @@ object Main {
     val consumer2 = actorSystem.actorOf(Props[DummyConsumer])
     val broker2 = actorSystem.actorOf(Props(new TokensBroker(consumer2, systemSize)))
 
-
+    broker1 ! NeighbourAnnouncement(broker2)
 
     actorSystem.terminate()
   }

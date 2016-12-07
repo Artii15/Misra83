@@ -1,8 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef}
-import akka.remote.Ack
-import messages.NeighbourAnnouncement
+import messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
 import messages.tokens.TokenReturn
 import messages.tokens.misra.PingPongAlgToken
 
@@ -20,30 +19,34 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
   }
 
   private def receiveToken(token: PingPongAlgToken): Unit = {
-    val processedToken = unpack(token)
-    tokensConsumer ! processedToken
-    lastProcessedToken = Some(processedToken)
+    if(wasTokenLost(token))
+      regenerate(token)
+    else
+      processToken(token)
+  }
+
+  private def wasTokenLost(token: PingPongAlgToken): Boolean = lastProcessedToken.exists(_.equals(token))
+
+  private def regenerate(tokenDetectingLoss: PingPongAlgToken): Unit = {
+    val regeneratedToken = tokenDetectingLoss.makeComplementaryToken()
+    send(regeneratedToken, self)
+    send(tokenDetectingLoss, self)
+  }
+
+  private def processToken(token: PingPongAlgToken): Unit = {
+    val unpackedToken = unpack(token)
+    tokensConsumer ! unpackedToken
+    lastProcessedToken = Some(unpackedToken)
   }
 
   private def unpack(token: PingPongAlgToken): PingPongAlgToken = {
     numberOfPossessedTokens += 1
     assert(Set(1, 2) contains numberOfPossessedTokens)
 
-    if(wasTokenLost(token))
-      regenerate(token)
-    else if(hasTokensMeetingOccurred)
+    if(hasTokensMeetingOccurred)
       incarnate(token)
     else
       readExpectedTokenToken(token)
-  }
-
-  private def wasTokenLost(token: PingPongAlgToken): Boolean = lastProcessedToken.exists(_.equals(token))
-
-  private def regenerate(tokenDetectingLoss: PingPongAlgToken): PingPongAlgToken = {
-    val incarnatedToken = incarnate(tokenDetectingLoss)
-    val regeneratedToken = incarnatedToken.makeComplementaryToken()
-    send(regeneratedToken, self)
-    incarnatedToken
   }
 
   private def hasTokensMeetingOccurred = numberOfPossessedTokens == 2
@@ -69,6 +72,6 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
 
   private def receiveNeighbour(neighbourRef: ActorRef): Unit = {
     neighbour = Some(neighbourRef)
-    sender() ! Ack
+    sender() ! NeighbourRegistrationAck()
   }
 }
