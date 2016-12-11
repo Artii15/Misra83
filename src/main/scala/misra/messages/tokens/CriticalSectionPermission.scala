@@ -1,3 +1,3 @@
-package messages.tokens
+package misra.messages.tokens
 
 trait CriticalSectionPermission

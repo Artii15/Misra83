@@ -1,9 +1,9 @@
-package actors
+package misra.actors
 
 import akka.actor.{Actor, ActorRef}
-import messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
-import messages.tokens.TokenReturn
-import messages.tokens.misra.PingPongAlgToken
+import misra.messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
+import misra.messages.tokens.TokenReturn
+import misra.messages.tokens.misra.PingPongAlgToken
 
 class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Actor {
   var numberOfPossessedTokens = 0

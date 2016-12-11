@@ -1,4 +1,4 @@
-package messages
+package misra.messages
 
 import akka.actor.ActorRef
 
