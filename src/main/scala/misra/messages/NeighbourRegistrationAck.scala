@@ -1,3 +1,3 @@
 package misra.messages
 
-case class NeighbourRegistrationAck()
+case object NeighbourRegistrationAck

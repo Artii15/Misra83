@@ -11,6 +11,7 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
   var tokensVersion = 0
   var neighbour: Option[ActorRef] = None
 
+
   override def receive: Receive = {
     case token: PingPongAlgToken => receiveToken(token)
     case TokenReturn(token: PingPongAlgToken) => sendToNext(token)
@@ -46,7 +47,7 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
   private def hasTokensMeetingOccurred = numberOfPossessedTokens == 2
 
   private def incarnate(newlyArrivedToken: PingPongAlgToken): Unit =
-    tokensVersion = (newlyArrivedToken.getVersion + 1) % (numberOfPossessedTokens + 1)
+    tokensVersion = (newlyArrivedToken.getVersion + 1) % (numberOfProcesses + 1)
 
   private def readExpectedTokenVersion(token: PingPongAlgToken): Unit =
     tokensVersion = token.getVersion
@@ -58,6 +59,6 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
 
   private def receiveNeighbour(neighbourRef: ActorRef): Unit = {
     neighbour = Some(neighbourRef)
-    sender() ! NeighbourRegistrationAck()
+    sender() ! NeighbourRegistrationAck
   }
 }

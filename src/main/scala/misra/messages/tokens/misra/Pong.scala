@@ -9,6 +9,7 @@ case class Pong(version: Int) extends PingPongAlgToken {
 
   override def equals(token: Token): Boolean = token match {
     case Pong(pongVersion) => pongVersion == version
+    case _ => false
   }
 
   override def withVersion(chosenVersion: Int): PingPongAlgToken = Pong(chosenVersion)
