@@ -1,8 +1,9 @@
 package misra.demo
 
-import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import misra.demo.actors.RingSupervisor
-import misra.demo.messages.{LoseToken, Start}
+import misra.demo.messages.Start
+import misra.messages.LoseToken
 
 import scala.annotation.tailrec
 import scala.io.StdIn

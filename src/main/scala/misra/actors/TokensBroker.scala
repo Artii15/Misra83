@@ -1,21 +1,23 @@
 package misra.actors
 
 import akka.actor.{Actor, ActorRef}
-import misra.messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
+import misra.messages.{LoseToken, NeighbourAnnouncement, NeighbourRegistrationAck}
 import misra.messages.tokens.TokenReturn
 import misra.messages.tokens.misra.PingPongAlgToken
 
 class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Actor {
-  var numberOfPossessedTokens = 0
-  var lastProcessedToken: Option[PingPongAlgToken] = None
-  var tokensVersion = 0
-  var neighbour: Option[ActorRef] = None
+  private var simulateFailure = false
+  private var numberOfPossessedTokens = 0
+  private var lastProcessedToken: Option[PingPongAlgToken] = None
+  private var tokensVersion = 0
+  private var neighbour: Option[ActorRef] = None
 
 
   override def receive: Receive = {
-    case token: PingPongAlgToken => receiveToken(token)
+    case token: PingPongAlgToken => if(simulateFailure) simulateFailure = false else receiveToken(token)
     case TokenReturn(token: PingPongAlgToken) => sendToNext(token)
     case NeighbourAnnouncement(neighbourRef) => receiveNeighbour(neighbourRef)
+    case LoseToken => simulateFailure = true
     case _ => println("Unknown message received")
   }
 

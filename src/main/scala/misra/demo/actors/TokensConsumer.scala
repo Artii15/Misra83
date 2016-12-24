@@ -2,7 +2,6 @@ package misra.demo.actors
 
 import akka.actor.Actor
 import misra.demo.Writer
-import misra.demo.messages.LoseToken
 import misra.messages.tokens.TokenReturn
 import misra.messages.tokens.misra.{Ping, PingPongAlgToken, Pong}
 
@@ -10,14 +9,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
 
 class TokensConsumer(id: Int, consumersCount: Int) extends Actor {
-  private var loseNextToken = false
 
   override def receive: Receive = {
     case token: PingPongAlgToken => receiveToken(token)
-    case LoseToken => loseNextToken = true
   }
 
-  private def receiveToken(token: PingPongAlgToken): Unit = if(loseNextToken) loseNextToken = false else token match {
+  private def receiveToken(token: PingPongAlgToken): Unit = token match {
     case ping: Ping => receivePing(ping)
     case pong: Pong => receivePong(pong)
   }

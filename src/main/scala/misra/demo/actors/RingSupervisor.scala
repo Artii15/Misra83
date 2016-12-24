@@ -2,9 +2,9 @@ package misra.demo.actors
 
 import akka.actor.{Actor, Props}
 import misra.actors.TokensBroker
-import misra.demo.messages.{LoseToken, Start}
+import misra.demo.messages.Start
 import misra.messages.tokens.misra.{Ping, Pong}
-import misra.messages.{NeighbourAnnouncement, NeighbourRegistrationAck}
+import misra.messages.{LoseToken, NeighbourAnnouncement, NeighbourRegistrationAck}
 
 class RingSupervisor(ringSize: Int) extends Actor {
   private var unconfirmedAck = ringSize
@@ -13,7 +13,7 @@ class RingSupervisor(ringSize: Int) extends Actor {
   override def receive: Receive = {
     case Start => initializeRing()
     case NeighbourRegistrationAck => receiveNeighbourRegistrationAck()
-    case LoseToken => pairs.headOption.foreach(_.consumer ! LoseToken)
+    case LoseToken => pairs.headOption.foreach(_.broker ! LoseToken)
   }
 
   private def initializeRing(): Unit = {
