@@ -12,8 +12,8 @@ object Main {
   def main(args: Array[String]): Unit = {
     val actorSystem = ActorSystem()
     val supervisor = actorSystem.actorOf(Props(new RingSupervisor(10)))
-    supervisor ! Start
     Writer.clearScreen()
+    supervisor ! Start
     interact(supervisor, actorSystem)
   }
 

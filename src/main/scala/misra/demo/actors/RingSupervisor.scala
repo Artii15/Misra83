@@ -8,7 +8,7 @@ import misra.messages.{LoseToken, NeighbourAnnouncement, NeighbourRegistrationAc
 
 class RingSupervisor(ringSize: Int) extends Actor {
   private var unconfirmedAck = ringSize
-  private var pairs = List[ConsumerBrokerPair]()
+  private var pairs = Vector[ConsumerBrokerPair]()
 
   override def receive: Receive = {
     case Start => initializeRing()
@@ -17,10 +17,10 @@ class RingSupervisor(ringSize: Int) extends Actor {
   }
 
   private def initializeRing(): Unit = {
-    pairs = Range.inclusive(1, ringSize).foldLeft(List[ConsumerBrokerPair]())((pairs, nodeId) => {
+    pairs = Range.inclusive(1, ringSize).foldLeft(Vector[ConsumerBrokerPair]())((pairs, nodeId) => {
       val consumer = context.actorOf(Props(classOf[TokensConsumer], nodeId, ringSize))
       val broker = context.actorOf(Props(classOf[TokensBroker], consumer, ringSize))
-      ConsumerBrokerPair(consumer, broker) :: pairs
+      pairs :+ ConsumerBrokerPair(consumer, broker)
     })
     val lastPair = pairs.tail.foldLeft(pairs.head)((prevPair, currentPair) => {
       prevPair.broker ! NeighbourAnnouncement(currentPair.broker)
