@@ -14,11 +14,10 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
 
 
   override def receive: Receive = {
-    case token: PingPongAlgToken => if(simulateFailure) simulateFailure = false else receiveToken(token)
+    case token: PingPongAlgToken => receiveToken(token)
     case TokenReturn(token: PingPongAlgToken) => sendToNext(token)
     case NeighbourAnnouncement(neighbourRef) => receiveNeighbour(neighbourRef)
     case LoseToken => simulateFailure = true
-    case _ => println("Unknown message received")
   }
 
   private def receiveToken(token: PingPongAlgToken): Unit = {
@@ -56,7 +55,8 @@ class TokensBroker(tokensConsumer: ActorRef, numberOfProcesses: Int) extends Act
 
   private def sendToNext(token: PingPongAlgToken): Unit = {
     numberOfPossessedTokens -= 1
-    neighbour.foreach(_ ! token.withVersion(tokensVersion))
+    if(simulateFailure) simulateFailure = false
+    else neighbour.foreach(_ ! token.withVersion(tokensVersion))
   }
 
   private def receiveNeighbour(neighbourRef: ActorRef): Unit = {
